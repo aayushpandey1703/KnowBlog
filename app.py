@@ -11,6 +11,7 @@ def register():
     password=request.args.get("password")
     return render_template("register.htm",email=email)
 
+
 @app.post("/register")
 def register_post():
     email=request.form.get("email")
