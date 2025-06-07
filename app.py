@@ -96,7 +96,8 @@ def register_post():
 @app.get("/logout")
 def logout():
     try:
-        pass
+        session.clear()
+        return redirect(url_for("login"))
     except Exception as e:
         logger.error(f"Error: {e}")
         return render_template("error.htm")
