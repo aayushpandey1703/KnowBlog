@@ -1,4 +1,4 @@
-from flask import Flask, render_template,request,redirect,url_for
+from flask import Flask, render_template,request,redirect,url_for,session
 import pymysql
 
 def get_db_connection():
@@ -10,7 +10,7 @@ def get_db_connection():
             password='AVNS_dzrOiUs7-uI2sv17LMW',
             database='defaultdb',
             port=19275,
-            ssl={'ca': r'F:\Flask_Projects\E-library\certs\ca.pem'}
+            ssl={'ca': r'F:\Flask_Projects\Blog\certs\ca.pem'}
         )
         print("connected to db")
         return connection
@@ -20,10 +20,12 @@ def get_db_connection():
 
 
 app=Flask(__name__)
+app.secret_key="1234"
 
 @app.get("/")
 def login():
     try:
+        email=request.args.get("email")
         db=get_db_connection()
         if db is None:
             raise Exception("Database connection failed")
@@ -33,7 +35,7 @@ def login():
         print(users)
         cursor.close()
         db.close()
-        return render_template("login.htm",users=users)
+        return render_template("login.htm",email=email)
     except Exception as e:
         print(f"Error: {e}")
         return render_template("error.htm")
@@ -50,11 +52,12 @@ def login_post():
         cursor.execute("SELECT * FROM user WHERE email=%s AND password=%s", (email, password))
         user=cursor.fetchone()
         print(user)
+        session['username']=user[1]
         return redirect(url_for("index"))
         
     except Exception as e:
         print(f"Error: {e}")
-        return redirect(url_for("login"))
+        return render_template("error.htm")
 
 @app.get("/register")
 def register():
@@ -65,29 +68,35 @@ def register():
 
 @app.post("/register")
 def register_post():
-    email=request.form.get("email")
-    password=request.form.get("password")
-    # createa db connectionnn
-    print("connecting to db")
-    connection=get_db_connection()
-    print("connected to db")
-    if connection:
-        cursor=connection.cursor()
-        cursor.execute(''' insert into user (email,password) values (%s,%s)''',(email,password))
-        connection.commit()
-        print("User registered successfully!")
-        cursor.execute("select * from user")
-        user=cursor.fetchall()
-        print(user)
-        cursor.close()
-        connection.close()
-    else:
-        print("connection failed")
-    return redirect(url_for("register",email=email))
+    try:
+        username=request.form.get("username")
+        email=request.form.get("email")
+        password=request.form.get("password")
+        # createa db connectionnn
+        print("connecting to db")
+        connection=get_db_connection()
+        print("connected to db")
+        if connection:
+            cursor=connection.cursor()
+            cursor.execute(''' insert into user (username,email,password) values (%s,%s,%s)''',(username,email,password))
+            connection.commit()
+            print("User registered successfully!")
+            cursor.execute("select * from user")
+            user=cursor.fetchall()
+            print(user)
+            cursor.close()
+            connection.close()
+        else:
+            raise Exception("connection failed")
+        return redirect(url_for("login",email=email))
+    except Exception as e:
+        print(f"Error: {e}")
+        return render_template("error.htm")
 
 @app.get("/index")
 def index():
-    return render_template("index.htm")
+    username=session.get('username','Guest')
+    return render_template("index.htm",username=username)
 
 if __name__=="__main__":
     app.run(debug=True, host="0.0.0.0", port="5000")

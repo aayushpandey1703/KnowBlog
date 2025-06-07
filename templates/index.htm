@@ -3,54 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Library</title>
-    <!-- Bootstrap CSS -->
+    <title>My Blog</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             background-color: #f8f9fa;
         }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
+        .blog-header {
+            border-bottom: 1px solid #e5e5e5;
+            margin-bottom: 2rem;
+        }
+        .blog-footer {
+            padding: 2rem 0;
+            color: #6c757d;
+            text-align: center;
+            background-color: #f8f9fa;
+            border-top: 1px solid #e5e5e5;
+            margin-top: 2rem;
+        }
+        .sidebar {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            padding: 1.5rem;
         }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">E-Library</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="#">MyBlog</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Books</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">My Account</a>
-                    </li>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
                 </ul>
-                <form class="d-flex">
-                    <input class="form-control me-2" type="search" placeholder="Search books...">
-                    <button class="btn btn-outline-light" type="submit">Search</button>
-                </form>
             </div>
         </div>
     </nav>
 
+    <!-- Main Content -->
     <div class="container">
-        <h1 class="my-4">Welcome to E-Library</h1>
-        
-        <!-- Content will go here -->
+        <div class="row">
+            <!-- Blog Posts -->
+            <div class="col-md-8">
+                <div class="mb-4">
+                    <h2 class="fw-bold">Welcome {{username}}!</h2>
+                    <p class="text-muted">Latest posts, stories, and updates</p>
+                </div>
+                <!-- Blog Post Card 1 -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h3 class="card-title">How to Start Blogging in 2024</h3>
+                        <p class="card-text">Blogging is a great way to share your thoughts and ideas with the world. In this post, we'll cover the basics of starting your own blog...</p>
+                        <a href="#" class="btn btn-primary">Read More</a>
+                    </div>
+                    <div class="card-footer text-muted">Posted on June 1, 2024 by Admin</div>
+                </div>
+                <!-- Blog Post Card 2 -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h3 class="card-title">10 Tips for Writing Engaging Content</h3>
+                        <p class="card-text">Creating engaging content is key to building a loyal audience. Here are 10 tips to help you write posts that keep readers coming back...</p>
+                        <a href="#" class="btn btn-primary">Read More</a>
+                    </div>
+                    <div class="card-footer text-muted">Posted on May 28, 2024 by Jane Doe</div>
+                </div>
+                <!-- Blog Post Card 3 -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h3 class="card-title">The Best Blogging Tools in 2024</h3>
+                        <p class="card-text">From writing to publishing, these tools will help you streamline your blogging workflow and grow your audience...</p>
+                        <a href="#" class="btn btn-primary">Read More</a>
+                    </div>
+                    <div class="card-footer text-muted">Posted on May 20, 2024 by John Smith</div>
+                </div>
+            </div>
+            <!-- Sidebar -->
+            <div class="col-md-4">
+                <div class="sidebar mb-4">
+                    <h4>About</h4>
+                    <p>Welcome to MyBlog! Here you'll find articles on blogging, writing, and digital creativity. Join our community and start your blogging journey today!</p>
+                </div>
+                <div class="sidebar">
+                    <h4>Categories</h4>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Blogging Tips</a></li>
+                        <li><a href="#">Writing</a></li>
+                        <li><a href="#">Productivity</a></li>
+                        <li><a href="#">Tech</a></li>
+                        <li><a href="#">Inspiration</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Bootstrap Bundle with Popper -->
+    <!-- Footer -->
+    <footer class="blog-footer">
+        <div class="container">
+            <p>&copy; 2024 MyBlog. All rights reserved.</p>
+        </div>
+    </footer>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
