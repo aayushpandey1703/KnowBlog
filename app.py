@@ -26,15 +26,6 @@ app.secret_key="1234"
 def login():
     try:
         email=request.args.get("email")
-        db=get_db_connection()
-        if db is None:
-            raise Exception("Database connection failed")
-        cursor=db.cursor()
-        cursor.execute("select * from user")
-        users=cursor.fetchall()
-        logger.debug(users)
-        cursor.close()
-        db.close()
         return render_template("login.htm",email=email)
     except Exception as e:
         logger.error(f"Error: {e}")
@@ -49,6 +40,11 @@ def login_post():
         if db is None:
             raise Exception("Database connection failed")
         cursor=db.cursor()
+        logger.info("Getting all users...")
+        cursor.execute("select * from user")
+        users=cursor.fetchall()
+        for i in users:
+            logger.info(i)
         cursor.execute("SELECT * FROM user WHERE email=%s AND password=%s", (email, password))
         user=cursor.fetchone()
         logger.debug(user)
@@ -107,6 +103,19 @@ def logout():
 def index():
     username=session.get('username','Guest')
     return render_template("index.htm",username=username)
+
+@app.get("/addblog")
+def add_blog():
+    try:
+        if session:
+            return render_template("addblog.htm")
+        else:
+            return redirect(url_for("login"))
+    except Exception as e:
+        logger.error("Failed in add blog: "+str(e))
+        return render_template("error.htm")
+    
+
 
 if __name__=="__main__":
     app.run(debug=True, host="0.0.0.0", port="5000")
