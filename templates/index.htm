@@ -62,32 +62,20 @@
                     <p class="text-muted">Latest posts, stories, and updates</p>
                 </div>
                 <!-- Blog Post Card 1 -->
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h3 class="card-title">How to Start Blogging in 2024</h3>
-                        <p class="card-text">Blogging is a great way to share your thoughts and ideas with the world. In this post, we'll cover the basics of starting your own blog...</p>
-                        <a href="#" class="btn btn-primary">Read More</a>
-                    </div>
-                    <div class="card-footer text-muted">Posted on June 1, 2024 by Admin</div>
-                </div>
-                <!-- Blog Post Card 2 -->
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h3 class="card-title">10 Tips for Writing Engaging Content</h3>
-                        <p class="card-text">Creating engaging content is key to building a loyal audience. Here are 10 tips to help you write posts that keep readers coming back...</p>
-                        <a href="#" class="btn btn-primary">Read More</a>
-                    </div>
-                    <div class="card-footer text-muted">Posted on May 28, 2024 by Jane Doe</div>
-                </div>
-                <!-- Blog Post Card 3 -->
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h3 class="card-title">The Best Blogging Tools in 2024</h3>
-                        <p class="card-text">From writing to publishing, these tools will help you streamline your blogging workflow and grow your audience...</p>
-                        <a href="#" class="btn btn-primary">Read More</a>
-                    </div>
-                    <div class="card-footer text-muted">Posted on May 20, 2024 by John Smith</div>
-                </div>
+<!-- Blog Post Cards -->
+{% for blog in blogs %}
+<div class="card mb-4">
+    <div class="card-body">
+        <h3 class="card-title">{{ blog.title }}</h3>
+        <p class="card-text">{{ blog.summary }}</p>
+        <a href="/view_blog?q={{blog.id}}" class="btn btn-primary">Read More</a>
+    </div>
+    <div class="card-footer text-muted">
+        Posted on {{ blog.date }} by {{ blog.author }}
+    </div>
+</div>
+{% endfor %}
+
             </div>
             <!-- Sidebar -->
             <div class="col-md-4">

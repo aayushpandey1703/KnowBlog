@@ -1,7 +1,7 @@
 from flask import Flask, render_template,request,redirect,url_for,session,make_response
 import pymysql
 from loguru import logger
-import uuid
+import uuid,datetime
 def get_db_connection():
     try:
         logger.debug("connecting to db")
@@ -118,7 +118,34 @@ def index():
         username=session[session_uid]['username']
     else:
         username="Guest"
-    return render_template("index.htm",username=username)
+    conn=get_db_connection()
+    if conn:
+        cursor=conn.cursor()
+        cursor.execute("select * from Blog")
+        blogs=cursor.fetchall()
+        blog_list=[]
+        for i in blogs:
+            dt=i[4]
+            formatted=dt.strftime('%B %d, %Y')
+            blog_card={
+                "title":i[1],
+                "content":i[2],
+                "author":i[3],
+                "date":formatted
+            }
+            print(blog_card)
+            blog_list.append(blog_card)
+    else:
+        raise Exception("Failed to connect to database")
+    return render_template("index.htm",username=username,blogs=blog_list)
+
+@app.get("/view_blog")
+def view_blog():
+    try:
+        pass
+    except Exception as e:
+        logger.error(f"Failed to view blog {str(e)}")
+        return render_template("error.htm")
 
 @app.get("/addblog")
 def add_blog():
