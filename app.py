@@ -1,4 +1,4 @@
-from flask import Flask, render_template,request,redirect,url_for,session
+from flask import Flask, render_template,request,redirect,url_for,session,make_response
 import pymysql
 from loguru import logger
 def get_db_connection():
@@ -108,11 +108,36 @@ def index():
 def add_blog():
     try:
         if session:
-            return render_template("addblog.htm")
+            status=request.args.get('status')
+            return render_template("addblog.htm",status=status)
         else:
             return redirect(url_for("login"))
     except Exception as e:
         logger.error("Failed in add blog: "+str(e))
+        return render_template("error.htm")
+
+@app.post("/addblog")
+def blog_post():
+    try:
+        title,content=request.form.get("title"),"content"
+        author=session.get('username','Guest')
+        conn=get_db_connection()
+        if conn:
+            cursor=conn.cursor()
+            cursor.execute(f"insert into Blog (title,content,author) values ('{title}','{content}','{author}')")
+            conn.commit()
+            logger.debug("Blog add successfully")
+            logger.debug("Getting all blogs..")
+            blogs=cursor.execute("select * from Blog")
+            logger.info(blogs)
+            cursor.close()
+            conn.close()
+        else:
+            raise Exception(f"failed to connect DB {conn}")
+
+        return redirect(url_for("add_blog",status=True))
+    except Exception as e:
+        logger.error("Failed to add blog: "+str(e))
         return render_template("error.htm")
     
 
