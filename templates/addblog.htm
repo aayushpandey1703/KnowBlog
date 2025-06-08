@@ -38,7 +38,7 @@
               <a class="nav-link" href="/">Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="/index">Blogs</a>
+              <a class="nav-link active" aria-current="page" href="/">Blogs</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/logout">Logout</a>
@@ -61,15 +61,15 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 {% endif %}
-                    <form action="/addblog" method="POST">
+                    <form id="addblog-form" action="/addblog" method="POST" onsubmit="return submitTinyMCEForm();">
                         <div class="mb-3">
                             <label for="title" class="form-label">Title</label>
                             <input type="text" class="form-control" id="title" name="title" required>
                         </div>
-                        <!-- <div class="mb-3">
+                        <div class="mb-3">
                             <label for="content" class="form-label">Content</label>
-                            <textarea class="form-control" id="content" name="content" rows="6" required></textarea>
-                        </div> -->
+                            <textarea class="form-control" id="content" name="content" rows="6"></textarea>
+                        </div>
                         <button type="submit" class="btn btn-primary w-100">Add Blog</button>
                     </form>
                 </div>
@@ -86,6 +86,17 @@
         toolbar: 'undo redo | bold italic underline | bullist numlist | link image | code',
         branding: false
       });
+
+      function submitTinyMCEForm() {
+        tinymce.triggerSave();
+        var content = document.getElementById('content').value.trim();
+        if (!content) {
+          alert('Content is required!');
+          tinymce.get('content').focus();
+          return false; // Prevent form submission
+        }
+        return true;
+      }
     </script>
 </body>
 </html>

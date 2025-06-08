@@ -1,6 +1,7 @@
 from flask import Flask, render_template,request,redirect,url_for,session,make_response
 import pymysql
 from loguru import logger
+import uuid
 def get_db_connection():
     try:
         logger.debug("connecting to db")
@@ -22,16 +23,17 @@ def get_db_connection():
 app=Flask(__name__)
 app.secret_key="1234"
 
-@app.get("/")
+@app.get("/login")
 def login():
     try:
         email=request.args.get("email")
-        return render_template("login.htm",email=email)
+        message=request.args.get("message")
+        return render_template("login.htm",email=email,message=message)
     except Exception as e:
         logger.error(f"Error: {e}")
         return render_template("error.htm")
 
-@app.post("/")
+@app.post("/login")
 def login_post():
     try:
         email=request.form.get("email")
@@ -47,9 +49,16 @@ def login_post():
             logger.info(i)
         cursor.execute("SELECT * FROM user WHERE email=%s AND password=%s", (email, password))
         user=cursor.fetchone()
+        if user is None:
+            return redirect(url_for("login",message="Invalid email id"))
         logger.debug(user)
-        session['username']=user[1]
-        return redirect(url_for("index"))
+        session_uid=str(uuid.uuid4())
+        session[session_uid]={}
+        session[session_uid]['username']=user[1]
+        session[session_uid]['email']=user[2]
+        response=make_response(redirect(url_for("index")))
+        response.set_cookie("cookie_name",session_uid,max_age=3600)
+        return response
         
     except Exception as e:
         logger.error(f"Error: {e}")
@@ -92,25 +101,35 @@ def register_post():
 @app.get("/logout")
 def logout():
     try:
-        session.clear()
-        return redirect(url_for("login"))
+        session_uid=request.cookies.get('cookie_name')
+        session.pop(session_uid)
+        response=make_response(redirect(url_for("login")))
+        response.set_cookie('cookie_name','',max_age=0)
+        return response
     except Exception as e:
         logger.error(f"Error: {e}")
         return render_template("error.htm")
         
 
-@app.get("/index")
+@app.get("/")
 def index():
-    username=session.get('username','Guest')
+    session_uid=request.cookies.get('cookie_name',None)
+    if session_uid:
+        username=session[session_uid]['username']
+    else:
+        username="Guest"
     return render_template("index.htm",username=username)
 
 @app.get("/addblog")
 def add_blog():
     try:
-        if session:
-            status=request.args.get('status')
+        session_uid=request.cookies.get('cookie_name')
+        if session_uid:
+            status=request.args.get('status')   
             return render_template("addblog.htm",status=status)
         else:
+            logger.error("No session")
+            logger.error(session_uid)
             return redirect(url_for("login"))
     except Exception as e:
         logger.error("Failed in add blog: "+str(e))
@@ -119,8 +138,11 @@ def add_blog():
 @app.post("/addblog")
 def blog_post():
     try:
-        title,content=request.form.get("title"),"content"
-        author=session.get('username','Guest')
+        title,content=request.form.get("title"),request.form.get("content")
+        session_uid=request.cookies.get('cookie_name')
+        if session_uid is None:
+            raise Exception("no session ID found")
+        author=session[session_uid]['username']
         conn=get_db_connection()
         if conn:
             cursor=conn.cursor()
@@ -128,8 +150,9 @@ def blog_post():
             conn.commit()
             logger.debug("Blog add successfully")
             logger.debug("Getting all blogs..")
-            blogs=cursor.execute("select * from Blog")
-            logger.info(blogs)
+            cursor.execute("select * from Blog")
+            allblogs=cursor.fetchall()
+            logger.info(allblogs)
             cursor.close()
             conn.close()
         else:
@@ -140,7 +163,5 @@ def blog_post():
         logger.error("Failed to add blog: "+str(e))
         return render_template("error.htm")
     
-
-
 if __name__=="__main__":
     app.run(debug=True, host="0.0.0.0", port="5000")
