@@ -2,6 +2,7 @@ from flask import Flask, render_template,request,redirect,url_for,session,make_r
 import pymysql
 from loguru import logger
 import uuid,datetime
+
 def get_db_connection():
     try:
         logger.debug("connecting to db")
@@ -53,12 +54,15 @@ def login_post():
         if user is None:
             return redirect(url_for("login",message="Invalid email id"))
         logger.debug(user)
+        # create session and store session in cookie
         session_uid=str(uuid.uuid4())
         session[session_uid]={}
         session[session_uid]['username']=user[1]
         session[session_uid]['email']=user[2]
+        # next page 
         next_page=request.args.get('next')
         print(next_page)
+        # make response for custom header and cookie
         response=make_response(redirect(next_page or url_for("index")))
         response.set_cookie("cookie_name",session_uid,max_age=3600)
         return response
@@ -125,7 +129,7 @@ def index():
     conn=get_db_connection()
     if conn:
         cursor=conn.cursor()
-        cursor.execute("select * from Blog")
+        cursor.execute("select * from Blog order by id desc")
         blogs=cursor.fetchall()
         blog_list=[]
         for i in blogs:
