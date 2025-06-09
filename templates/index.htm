@@ -1,109 +1,189 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Blog</title>
+    <title>📝 Midnight Thoughts</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background-color: #f8f9fa;
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: 'Segoe UI', sans-serif;
         }
-        .blog-header {
-            border-bottom: 1px solid #e5e5e5;
+
+        .navbar {
+            background-color: #1f1f1f;
+            border-bottom: 1px solid #333;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .nav-link {
+            color: #ccc !important;
+            margin-left: 1rem;
+        }
+
+        .nav-link.active, .nav-link:hover {
+            color: #0d6efd !important;
+        }
+
+        .hero {
+            padding: 2rem 0;
+            border-bottom: 1px solid #2c2c2c;
             margin-bottom: 2rem;
         }
+
+        .hero h2 {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .hero p {
+            color: #bbb;
+        }
+
+        .card {
+            background-color: #1e1e1e;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .card-title {
+            color: #ffffff;
+        }
+
+        .card-text {
+            color: #cccccc;
+        }
+
+        .card-footer {
+            border-top: 1px solid #333;
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background-color: #0d6efd;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+        }
+
+        .sidebar {
+            background-color: #1c1c1c;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        }
+
+        .sidebar h4 {
+            color: #ffffff;
+            margin-bottom: 1rem;
+        }
+
+        .sidebar p,
+        .sidebar a {
+            color: #bbb;
+        }
+
+        .sidebar a:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+
         .blog-footer {
             padding: 2rem 0;
-            color: #6c757d;
+            color: #999;
             text-align: center;
-            background-color: #f8f9fa;
-            border-top: 1px solid #e5e5e5;
-            margin-top: 2rem;
-        }
-        .sidebar {
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.05);
-            padding: 1.5rem;
+            border-top: 1px solid #333;
+            margin-top: 3rem;
+            background-color: #1a1a1a;
         }
     </style>
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
-        <div class="container">
-            <a class="navbar-brand" href="#">MyBlog</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
-                    {% if username == 'Guest' %}
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg shadow-sm mb-4">
+    <div class="container">
+        <a class="navbar-brand" href="#">📝 Midnight Thoughts</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
+                {% if username == 'Guest' %}
                     <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
                 {% else %}
                     <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
                 {% endif %}
-                
-                    <li class="nav-item"><a class="nav-link" href="/addblog">Add Blog</a></li>
+                <li class="nav-item"><a class="nav-link" href="/addblog">Add Blog</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<div class="container hero">
+    <h2>Welcome {{username}}!</h2>
+    <p>Latest posts, stories, and updates from the community</p>
+</div>
+
+<!-- Main Content -->
+<div class="container">
+    <div class="row">
+        <!-- Blog Posts -->
+        <div class="col-md-8">
+            {% for blog in blogs %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h3 class="card-title">{{ blog.title }}</h3>
+                    <p class="card-text">{{ blog.summary }}</p>
+                    <a href="/view_blog?q={{ blog.id }}" class="btn btn-primary">Read More</a>
+                </div>
+                <div class="card-footer">
+                    Posted on {{ blog.date }} by {{ blog.author }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-md-4">
+            <div class="sidebar">
+                <h4>About</h4>
+                <p>Welcome to 📝 Midnight Thoughts — your go-to source for ideas, inspiration, and personal blogging adventures. Start your journey here.</p>
+            </div>
+            <div class="sidebar">
+                <h4>Categories</h4>
+                <ul class="list-unstyled">
+                    <li><a href="#">Blogging Tips</a></li>
+                    <li><a href="#">Writing</a></li>
+                    <li><a href="#">Productivity</a></li>
+                    <li><a href="#">Tech</a></li>
+                    <li><a href="#">Inspiration</a></li>
                 </ul>
             </div>
         </div>
-    </nav>
-
-    <!-- Main Content -->
-    <div class="container">
-        <div class="row">
-            <!-- Blog Posts -->
-            <div class="col-md-8">
-                <div class="mb-4">
-                    <h2 class="fw-bold">Welcome {{username}}!</h2>
-                    <p class="text-muted">Latest posts, stories, and updates</p>
-                </div>
-                <!-- Blog Post Card 1 -->
-<!-- Blog Post Cards -->
-{% for blog in blogs %}
-<div class="card mb-4">
-    <div class="card-body">
-        <h3 class="card-title">{{ blog.title }}</h3>
-        <p class="card-text">{{ blog.summary }}</p>
-        <a href="/view_blog?q={{blog.id}}" class="btn btn-primary">Read More</a>
-    </div>
-    <div class="card-footer text-muted">
-        Posted on {{ blog.date }} by {{ blog.author }}
     </div>
 </div>
-{% endfor %}
 
-            </div>
-            <!-- Sidebar -->
-            <div class="col-md-4">
-                <div class="sidebar mb-4">
-                    <h4>About</h4>
-                    <p>Welcome to MyBlog! Here you'll find articles on blogging, writing, and digital creativity. Join our community and start your blogging journey today!</p>
-                </div>
-                <div class="sidebar">
-                    <h4>Categories</h4>
-                    <ul class="list-unstyled">
-                        <li><a href="#">Blogging Tips</a></li>
-                        <li><a href="#">Writing</a></li>
-                        <li><a href="#">Productivity</a></li>
-                        <li><a href="#">Tech</a></li>
-                        <li><a href="#">Inspiration</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
+<!-- Footer -->
+<footer class="blog-footer">
+    <div class="container">
+        <p>&copy; 2024 MyBlog. All rights reserved.</p>
     </div>
+</footer>
 
-    <!-- Footer -->
-    <footer class="blog-footer">
-        <div class="container">
-            <p>&copy; 2024 MyBlog. All rights reserved.</p>
-        </div>
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -28,7 +28,8 @@ def login():
     try:
         email=request.args.get("email")
         message=request.args.get("message")
-        return render_template("login.htm",email=email,message=message)
+        next_page=request.args.get("next")
+        return render_template("login.htm",email=email,message=message,next_page=next_page)
     except Exception as e:
         logger.error(f"Error: {e}")
         return render_template("error.htm")
@@ -56,7 +57,9 @@ def login_post():
         session[session_uid]={}
         session[session_uid]['username']=user[1]
         session[session_uid]['email']=user[2]
-        response=make_response(redirect(url_for("index")))
+        next_page=request.args.get('next')
+        print(next_page)
+        response=make_response(redirect(next_page or url_for("index")))
         response.set_cookie("cookie_name",session_uid,max_age=3600)
         return response
         
@@ -117,6 +120,7 @@ def index():
     if session_uid:
         username=session[session_uid]['username']
     else:
+
         username="Guest"
     conn=get_db_connection()
     if conn:
@@ -128,6 +132,7 @@ def index():
             dt=i[4]
             formatted=dt.strftime('%B %d, %Y')
             blog_card={
+                "id":i[0],
                 "title":i[1],
                 "content":i[2],
                 "author":i[3],
@@ -139,13 +144,6 @@ def index():
         raise Exception("Failed to connect to database")
     return render_template("index.htm",username=username,blogs=blog_list)
 
-@app.get("/view_blog")
-def view_blog():
-    try:
-        pass
-    except Exception as e:
-        logger.error(f"Failed to view blog {str(e)}")
-        return render_template("error.htm")
 
 @app.get("/addblog")
 def add_blog():
@@ -189,6 +187,32 @@ def blog_post():
     except Exception as e:
         logger.error("Failed to add blog: "+str(e))
         return render_template("error.htm")
-    
+
+@app.get("/view_blog")
+def viewblog():
+    session_uid=request.cookies.get("cookie_name")
+    blog_id=request.args.get("q")
+    try:
+        # check if session exsts
+        if (session_uid) and (session_uid in session):
+            conn=get_db_connection()
+            cursor=conn.cursor()
+            cursor.execute(f"select * from Blog where id='{blog_id}'")
+            blog=cursor.fetchone()
+            dt=blog[4]
+            formatted_date=dt.strftime("%B %d, %Y")
+            blog_details={
+                "title":blog[1],
+                "content":blog[2],
+                "author":blog[3],
+                "created_at":formatted_date
+            }
+            return render_template("viewblog.htm",blog=blog_details)
+        else:
+            return redirect(url_for("login",next=f"/view_blog?q={blog_id}"))
+    except Exception as e:
+        logger.error(f"Failed to get blog: {str(e)}")
+        return render_template("error.htm")
+
 if __name__=="__main__":
     app.run(debug=True, host="0.0.0.0", port="5000")
