@@ -12,7 +12,7 @@ def get_db_connection():
             password='AVNS_dzrOiUs7-uI2sv17LMW',
             database='defaultdb',
             port=19275,
-            ssl={'ca': r'F:\Flask_Projects\Blog\certs\ca.pem'}
+            ssl={'ca': r'/app/certs/ca.pem'}
         )
         logger.debug("connected to db")
         return connection
